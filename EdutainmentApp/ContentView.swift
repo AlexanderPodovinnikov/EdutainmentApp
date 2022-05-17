@@ -43,8 +43,8 @@ struct ContentView: View {
                 Text("What is \(questions.scope[currentQuestion].leftOperand) x \(questions.scope[currentQuestion].rightOperand)?")
                     .font(.title)
                     .padding(.bottom)
-                Text("The answer is:")
-                    .font(.title2)
+//                Text("The answer is:")
+//                    .font(.title2)
                     
                 Section {
                     TextField("Enter your answer", value: $currentAnswer, format: .number)
@@ -84,6 +84,13 @@ struct ContentView: View {
             }
             .padding()
             .navigationTitle("Multiplication")
+            .toolbar {
+                Button {
+                    
+                } label: {
+                    Image(systemName: "gearshape")
+                }
+            }
             .alert("Game over", isPresented: $isShowingScore) {
                 Button("Ok") {
                     startNewGame()
