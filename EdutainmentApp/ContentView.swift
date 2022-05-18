@@ -21,6 +21,7 @@ struct ContentView: View {
     @State private var currentQuestion = 0
     @State private var currentAnswer: Int?
     @State private var isShowingScore = false
+    @State private var isShowingSettings = false
     
     @FocusState private var inputIsFocused: Bool
     
@@ -43,9 +44,6 @@ struct ContentView: View {
                 Text("What is \(questions.scope[currentQuestion].leftOperand) x \(questions.scope[currentQuestion].rightOperand)?")
                     .font(.title)
                     .padding(.bottom)
-//                Text("The answer is:")
-//                    .font(.title2)
-                    
                 Section {
                     TextField("Enter your answer", value: $currentAnswer, format: .number)
                         .keyboardType(.numberPad)
@@ -67,28 +65,15 @@ struct ContentView: View {
                     }
                 }
                 .font(.title)
-                NavigationLink {
-                    SettingsView(save: setDifficulty)
-                } label: {
-                    Text("Settings ->")
-                }
-                .font(.title2)
-                .padding()
-                .onChange(of: questionnaireSize) { _ in
-                    startNewGame()
-                }
-                .onChange(of: maxLevel) { _ in
-                    startNewGame()
-                }
                 Spacer()
             }
             .padding()
             .navigationTitle("Multiplication")
             .toolbar {
                 Button {
-                    
+                    isShowingSettings = true
                 } label: {
-                    Image(systemName: "gearshape")
+                    Text("Settings")
                 }
             }
             .alert("Game over", isPresented: $isShowingScore) {
@@ -96,8 +81,13 @@ struct ContentView: View {
                     startNewGame()
                 }
             } message: {
-                Text("\(score) of \(questionnaireSize.rawValue) your answers were coorect. \nPress OK to continue")
+                Text("\(score) of \(questionnaireSize.rawValue) your answers were correct. \nPress OK to continue")
             }
+        }
+        .sheet(isPresented: $isShowingSettings) {
+            startNewGame()
+        } content: {
+            SettingsView(save: setDifficulty)
         }
     }
     

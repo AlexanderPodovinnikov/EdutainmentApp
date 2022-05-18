@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     let maxLevel = 12
-    @State private var numberOfQuestions: Questionnaire = .medium
+    @State private var numberOfQuestions: Questionnaire = .small
     @State private var level: Int = 5
     var saveSettings: (Questionnaire, Int) -> Void
     
@@ -20,16 +20,20 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Text("Your difficulty settings:")
-                .font(.headline)
+                .font(.title)
                 .padding(.bottom)
-            Picker("Number of questions", selection: $numberOfQuestions) {
-                ForEach(Questionnaire.allCases, id: \.self) {
-                    Text("\($0.rawValue)")
+            Section("Number of questions") {
+                Picker("Number of questions", selection: $numberOfQuestions) {
+                    ForEach(Questionnaire.allCases, id: \.self) {
+                        Text("\($0.rawValue)")
+                    }
                 }
+                .pickerStyle(.segmented)
                 .onChange(of: numberOfQuestions) { newValue in
                     saveSettings(newValue, level)
                 }
             }
+  
             Section("Level") {
                 Picker("Level:", selection: $level) {
                     ForEach(2...maxLevel, id: \.self) {
@@ -47,8 +51,10 @@ struct SettingsView: View {
     }
 }
 
-//struct SettingsView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        SettingsView(save: dummymy(.medium, 5))
-//    }
-//}
+struct SettingsView_Previews: PreviewProvider {
+    static var previews: some View {
+        SettingsView { q, i in
+            
+        }
+    }
+}
