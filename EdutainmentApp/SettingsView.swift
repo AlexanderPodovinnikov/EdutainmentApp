@@ -18,36 +18,38 @@ struct SettingsView: View {
     }
     
     var body: some View {
-        Form {
-            Text("Your difficulty settings:")
-                .font(.title)
-                .padding(.bottom)
-            Section("Number of questions") {
-                Picker("Number of questions", selection: $numberOfQuestions) {
-                    ForEach(Questionnaire.allCases, id: \.self) {
-                        Text("\($0.rawValue)")
-                    }
-                }
-                .pickerStyle(.segmented)
-                .onChange(of: numberOfQuestions) { newValue in
-                    saveSettings(newValue, level)
-                }
-            }
-  
-            Section("Level") {
-                Picker("Level:", selection: $level) {
-                    ForEach(2...maxLevel, id: \.self) {
-                        Text("\($0)")
-                    }
-                }
-                .pickerStyle(.segmented)
-                .onChange(of: level) { newValue in
-                    saveSettings(numberOfQuestions, newValue)
-                }
-            }
-            .padding()
-        }
         
+        VStack {
+            Text("Set difficulty:")
+            .font(.title)
+            .padding(.bottom)
+            Form {
+                Section("Number of questions") {
+                    Picker("Number of questions", selection: $numberOfQuestions) {
+                        ForEach(Questionnaire.allCases, id: \.self) {
+                            Text("\($0.rawValue)")
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .onChange(of: numberOfQuestions) { newValue in
+                        saveSettings(newValue, level)
+                    }
+                }
+      
+                Section("Level") {
+                    Picker("Level:", selection: $level) {
+                        ForEach(2...maxLevel, id: \.self) {
+                            Text("\($0)")
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .onChange(of: level) { newValue in
+                        saveSettings(numberOfQuestions, newValue)
+                    }
+                }
+            }
+        }
+        .padding()
     }
 }
 

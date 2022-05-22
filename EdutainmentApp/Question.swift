@@ -17,10 +17,12 @@ struct Question {
         rightOperand = right
         answer = left * right
     }
+    static var example = Question(multiply: 5, by: 5)
 }
 
-class Questions {
-    var scope: [Question]
+class Questions: ObservableObject {
+    @Published var scope: [Question]
+    static var example = Question(multiply: 11, by: 12)
     
     init(size: Questionnaire, levelRage: ClosedRange<Int>) {
         scope = [Question]()

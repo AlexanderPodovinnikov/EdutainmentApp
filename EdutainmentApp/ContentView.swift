@@ -18,53 +18,24 @@ struct ContentView: View {
     @State private var questionnaireSize = Questionnaire.medium
     
     @State private var score = 0
-    @State private var currentQuestion = 0
-    @State private var currentAnswer: Int?
+    @State private var questionNumber = 0
+    
+    @State private var currentAnswer: Int = 0
     @State private var isShowingScore = false
     @State private var isShowingSettings = false
-    
-    @FocusState private var inputIsFocused: Bool
-    
-    var questions: Questions
-    
-    init() {
-        questions = Questions(size: .medium, levelRage: minLevel...5)
-    }
+   
+    @StateObject var questions: Questions = Questions(size: .medium, levelRage: 2...5)
     
     var body: some View {
         NavigationView {
             VStack {
                 HStack {
-                    Text("Question: \(currentQuestion + 1) from \(questionnaireSize.rawValue)")
+                    Text("Question: \(questionNumber + 1) from \(questionnaireSize.rawValue)")
                     Spacer()
                     Text("Correct answers: \(score)")
                 }
-                .padding(.bottom)
-                
-                Text("What is \(questions.scope[currentQuestion].leftOperand) x \(questions.scope[currentQuestion].rightOperand)?")
-                    .font(.title)
-                    .padding(.bottom)
-                Section {
-                    TextField("Enter your answer", value: $currentAnswer, format: .number)
-                        .keyboardType(.numberPad)
-                        .focused($inputIsFocused)
-                }
-                    .padding()
-                Button("Next") {
-                    if currentAnswer == questions.scope[currentQuestion].answer {
-                        score += 1
-                    }
-                    inputIsFocused = false
-                    currentAnswer = nil
-                    
-                    if currentQuestion < questionnaireSize.rawValue - 1 {
-                        currentQuestion += 1
-                    } else {
-                        isShowingScore = true
-
-                    }
-                }
-                .font(.title)
+                Spacer()
+                GameView(question: questions.scope[questionNumber], checkAnswer: updateScore)
                 Spacer()
             }
             .padding()
@@ -81,7 +52,7 @@ struct ContentView: View {
                     startNewGame()
                 }
             } message: {
-                Text("\(score) of \(questionnaireSize.rawValue) your answers were correct. \nPress OK to continue")
+                Text("\(score) of \(questionnaireSize.rawValue) answers were correct. \nPress OK to continue")
             }
         }
         .sheet(isPresented: $isShowingSettings) {
@@ -91,10 +62,21 @@ struct ContentView: View {
         }
     }
     
+    func updateScore(currentAnswer: Int) {
+        if currentAnswer == questions.scope[questionNumber].answer {
+            score += 1
+        }
+        if questionNumber < questionnaireSize.rawValue - 1 {
+            questionNumber += 1
+        } else {
+            isShowingScore = true
+        }
+    }
+
     func startNewGame() {
-        currentQuestion = 0
-        score = 0
         questions.generateQuestions(size: questionnaireSize, levelRage: minLevel...maxLevel)
+        questionNumber = 0 // order can't help with first q
+        score = 0
     }
     
     func setDifficulty(size: Questionnaire, level: Int) {

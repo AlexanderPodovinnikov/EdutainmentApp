@@ -11,7 +11,6 @@ struct AnswerView: View {
     var answer: Int
     var answerDigits: [Int?]
     
-    
     init(_ answer: Int) {
         self.answer = answer
         
@@ -41,8 +40,21 @@ struct AnswerView: View {
 }
 
 struct GameView: View {
-    var terms = ["2", "x", "2", "equal"]
+    var terms: [String]
     @State private var answer: Int = 0
+    
+    var question: Question
+    
+    var test: (Int) -> Void
+    
+    init(question: Question, checkAnswer: @escaping (Int) -> Void) {
+        
+        test = checkAnswer
+        
+        self.question = question 
+        
+       terms = ["\(question.leftOperand)", "x", "\(question.rightOperand)", "equal"]
+    }
     
     var body: some View {
         VStack {
@@ -96,7 +108,8 @@ struct GameView: View {
                     }
                     Button {
                         
-                        // save as current answer and check it
+                        test(answer)
+                        answer = 0
                         
                     }label: {
                         Image(systemName: "arrow.down.square")
@@ -118,6 +131,8 @@ struct GameView: View {
 
 struct GameView_Previews: PreviewProvider {
     static var previews: some View {
-        GameView()
+        GameView(question: Question.example) { Int in
+
+        }
     }
 }
