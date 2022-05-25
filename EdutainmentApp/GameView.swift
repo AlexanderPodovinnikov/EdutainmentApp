@@ -10,9 +10,11 @@ import SwiftUI
 struct AnswerView: View {
     var answer: Int
     var answerDigits: [Int?]
+    @Binding var rotationAmount: Double
     
-    init(_ answer: Int) {
+    init(_ answer: Int, _ animationAmount: Binding<Double>) {
         self.answer = answer
+        _rotationAmount = animationAmount
         
         if answer == 0 {
             answerDigits = [nil, nil, nil]
@@ -33,8 +35,11 @@ struct AnswerView: View {
             ForEach(answerDigits, id: \.self) { digit in
                 if let digit = digit {
                     Image(systemName: "\(digit).square.fill")
+//                        .onAppear(perform: {rotationAmount += .degrees(360)})
                 }
             }
+            .rotation3DEffect(.degrees(rotationAmount), axis: (x: 1.0, y: 0.0, z: 0.0))
+//            .animation(.easeOut, value: rotationAmount)
         }
     }
 }
@@ -46,6 +51,8 @@ struct GameView: View {
     var question: Question
     
     var test: (Int) -> Void
+    
+    @State var rotationAmount: Double = 0
     
     init(question: Question, checkAnswer: @escaping (Int) -> Void) {
         
@@ -62,46 +69,42 @@ struct GameView: View {
                 ForEach(0..<terms.count, id:\.self) {
                     Image(systemName: "\(terms[$0]).square")
                 }
-                AnswerView(answer)
+                AnswerView(answer, $rotationAmount)
             }
             .font(.system(size: 40))
             .padding(.bottom)
             VStack {
-                HStack {
-                    ForEach(0...2, id: \.self) { key in
-                        Button {
-                            addDigit(key)
-                        } label: {
-                            Image(systemName: "\(key).square")
-                        }
-                    }
-                }
-                HStack {
-                    ForEach(3...5, id: \.self) { key in
-                        Button {
-                            addDigit(key)
-                        } label: {
-                            Image(systemName: "\(key).square")
-                        }
-                    }
-                }
-                HStack {
-                    ForEach(6...8, id: \.self) { key in
-                        Button {
-                            addDigit(key)
-                        } label: {
-                            Image(systemName: "\(key).square")
+                VStack {
+                    ForEach(0...2, id: \.self) {row in
+                        HStack {
+                            ForEach(0...2, id: \.self) { col in
+                                let key = row * 3 + col
+                                Button {
+                                    addDigit(key)
+                                    withAnimation(.easeOut) {
+                                        rotationAmount += 360
+                                    }
+                                }label: {
+                                    Image(systemName: "\(key).square")
+                                }
+                            }
                         }
                     }
                 }
                 HStack {
                     Button {
                         addDigit(9)
+                        withAnimation(.easeOut) {
+                            rotationAmount += 360
+                        }
                     } label: {
                         Image(systemName: "9.square")
                     }
                     Button {
                         answer = answer / 10
+                        withAnimation(.easeOut) {
+                            rotationAmount -= 360
+                        }
                         
                     } label: {
                         Image(systemName: "chevron.forward.square")
@@ -110,7 +113,7 @@ struct GameView: View {
                         
                         test(answer)
                         answer = 0
-                        
+                            rotationAmount = 0
                     }label: {
                         Image(systemName: "arrow.down.square")
                     }
